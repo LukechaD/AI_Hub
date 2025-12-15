@@ -1,0 +1,33 @@
+name: ai_hub_flutter
+description: AI chat application.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.2.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  window_manager: ^0.4.0  # або остання версія з pub.dev
+
+
+  # --- ДОДАНІ БІБЛІОТЕКИ ---
+  google_generative_ai: ^0.4.0 # Для роботи з Gemini API
+  provider: ^6.1.1 # Для керування станом (State Management)
+  shared_preferences: ^2.2.2 # Для збереження API ключа
+  flutter_markdown: ^0.6.14 # Для гарного відображення тексту від AI
+  file_picker: ^8.0.0 # Для вибору картинок
+  # --------------------------
+
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+   
+
