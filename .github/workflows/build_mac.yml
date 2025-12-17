@@ -1,0 +1,39 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Enable desktop support
+        run: flutter config --enable-macos-desktop
+
+      - name: Build macOS app
+        run: flutter build macos --release
+
+      # Створюємо ZIP архів, бо просто .app папку передати важко
+      - name: Compress App
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r ai_terminal_mac.zip ai_hub_flutter.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macOS-Build
+          path: build/macos/Build/Products/Release/ai_terminal_mac.zip
