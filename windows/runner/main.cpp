@@ -27,9 +27,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   FlutterWindow window(project);
   Win32Window::Point origin(10, 10);
   Win32Window::Size size(1280, 720);
-  if (!window.Create(L"ai_hub_flutter", origin, size)) {
-    return EXIT_FAILURE;
-  }
+// Змінюємо Create, щоб приховати вікно при запуску (уникнути білого миготіння)
+    // window_manager потім сам покаже вікно, коли воно буде готове
+    if (!window.Create(L"ai_terminal", origin, size)) {
+        return EXIT_FAILURE;
+    }
+    // Цей рядок треба додати/перевірити, якщо використовуєш window_manager для повного контролю:
+    // Але у базовому варіанті код з main.dart (waitUntilReadyToShow) зробить основну роботу.
   window.SetQuitOnClose(true);
 
   ::MSG msg;
