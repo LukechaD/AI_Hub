@@ -29,7 +29,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   Win32Window::Size size(1280, 720);
 // Змінюємо Create, щоб приховати вікно при запуску (уникнути білого миготіння)
     // window_manager потім сам покаже вікно, коли воно буде готове
-    if (!window.Create(L"ai_terminal", origin, size)) {
+    if (!window.Create(L"AI > Terminal", origin, size)) {
         return EXIT_FAILURE;
     }
     // Цей рядок треба додати/перевірити, якщо використовуєш window_manager для повного контролю:

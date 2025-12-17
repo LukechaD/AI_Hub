@@ -40,7 +40,7 @@ class CyberTerminalApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI Hub',
+      title: 'AI Terminal',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           brightness: Brightness.dark,
