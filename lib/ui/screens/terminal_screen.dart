@@ -42,6 +42,8 @@ class _TerminalScreenState extends State<TerminalScreen> {
     setState(() {
       _selectedFamily = family;
     });
+    // Перевірка оновлень при старті
+    _checkForUpdates();
   }
 
   Future<void> _pickImage() async {
@@ -62,29 +64,33 @@ class _TerminalScreenState extends State<TerminalScreen> {
     }
   }
 
+  // ==========================================
+  // ЛОГІКА ОНОВЛЕННЯ (ПРОСТА ВЕРСІЯ)
+  // ==========================================
   Future<void> _checkForUpdates() async {
-    const String userName = "YOUR_USERNAME";
-    const String repoName = "YOUR_REPO";
+    // Впиши сюди свій GitHub
+    const String userName = "Dmytro10101";
+    const String repoName = "ai_hub_flutter";
+
     try {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       String currentVersion = packageInfo.version;
+
       final response = await http.get(Uri.parse(
           'https://api.github.com/repos/$userName/$repoName/releases/latest'));
+
       if (response.statusCode == 200) {
         final releaseData = jsonDecode(utf8.decode(response.bodyBytes));
         String latestVersion =
             releaseData['tag_name'].toString().replaceAll('v', '');
-        String downloadUrl = releaseData['html_url'];
+        String url = releaseData['html_url']; // Посилання на сторінку релізу
+
         if (latestVersion != currentVersion) {
-          _showUpdateDialog(currentVersion, latestVersion, downloadUrl);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-              content:
-                  Text("You have the latest version!", style: kTermStyle)));
+          _showUpdateDialog(currentVersion, latestVersion, url);
         }
       }
     } catch (e) {
-      print("Update check error: $e");
+      debugPrint("Update check error: $e");
     }
   }
 
@@ -97,9 +103,22 @@ class _TerminalScreenState extends State<TerminalScreen> {
             side: const BorderSide(color: kTermGreen),
             borderRadius: BorderRadius.circular(12)),
         title: const Text("UPDATE AVAILABLE", style: kTermStyle),
-        content: Text(
-            "Current: $current\nLatest:  $latest\n\nDownload new version?",
-            style: kTermStyle.copyWith(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Current: $current",
+                style: const TextStyle(color: Colors.grey)),
+            Text("Latest:  $latest",
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 15),
+            const Text(
+              "A new version is available on GitHub.\nClick DOWNLOAD to get the file for your OS.",
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -108,14 +127,15 @@ class _TerminalScreenState extends State<TerminalScreen> {
                       TextStyle(color: Colors.grey, fontFamily: 'monospace'))),
           TextButton(
               onPressed: () {
-                launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
                 Navigator.pop(ctx);
+                launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
               },
               child: const Text("DOWNLOAD", style: kTermStyle)),
         ],
       ),
     );
   }
+  // ==========================================
 
   void _showAPISettings(BuildContext context) {
     final provider = context.read<ChatProvider>();
@@ -172,6 +192,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                   style: TextStyle(
                       color: Colors.blueAccent, fontFamily: 'monospace')),
               onPressed: () {
+                Navigator.pop(ctx);
                 _checkForUpdates();
               }),
           TextButton(
@@ -210,7 +231,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
           icon: const Icon(Icons.arrow_drop_down, color: kTermGreen),
           style: kTermStyle,
           isExpanded: true,
-          // Закруглення країв випадаючого меню
           borderRadius: BorderRadius.circular(12),
           dropdownColor: kTermDarkGrey,
           onChanged: (String? newValue) {
@@ -259,8 +279,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
   Widget _buildInputField(double screenWidth) {
     final provider = context.watch<ChatProvider>();
     bool isSmallScreen = screenWidth < 800;
-
-    // Зменшили ширину випадаючого списку (було 220)
     double dropdownWidth =
         isSmallScreen ? (screenWidth * 0.30).clamp(80.0, 140.0) : 160.0;
 
@@ -393,7 +411,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 25, 10, 20),
+            padding: const EdgeInsets.fromLTRB(20, 60, 10, 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -469,15 +487,10 @@ class _TerminalScreenState extends State<TerminalScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
     bool isMobile = screenWidth < 900;
 
-    // ==========================================
-    // ВИРІВНЮВАННЯ:
-    // Це значення відступу тепер спільне для шапки, чату та інпуту
-    // ==========================================
     final double sidePadding = isMobile ? 10 : 40;
 
     Widget mainContent = Column(
       children: [
-        // ------------------ HEADER ROW ------------------
         Padding(
           padding: EdgeInsets.symmetric(horizontal: sidePadding, vertical: 15),
           child: Row(
@@ -510,8 +523,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                             style: kTermStyle,
                             isDense: true,
                             isExpanded: false,
-                            borderRadius:
-                                BorderRadius.circular(12), // Закруглення
+                            borderRadius: BorderRadius.circular(12),
                             onChanged: (val) {
                               if (val != null) {
                                 setState(() {
@@ -543,10 +555,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(width: 10),
-
-              // SETTINGS (Right)
               IconButton(
                 icon: const Icon(Icons.settings_outlined,
                     color: kTermGreen, size: 28),
@@ -556,8 +565,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
             ],
           ),
         ),
-
-        // ------------------ CHAT AREA ------------------
         Expanded(
           child: SizedBox(
             width: double.infinity,
@@ -569,7 +576,6 @@ class _TerminalScreenState extends State<TerminalScreen> {
                               color: Color(0xFF333333), fontSize: 20)))
                   : ListView.builder(
                       reverse: true,
-                      // Використовуємо той самий sidePadding
                       padding:
                           EdgeInsets.fromLTRB(sidePadding, 20, sidePadding, 20),
                       itemCount: provider.messages.length,
@@ -581,10 +587,7 @@ class _TerminalScreenState extends State<TerminalScreen> {
             ),
           ),
         ),
-
-        // ------------------ INPUT FIELD ------------------
         Padding(
-          // Використовуємо той самий sidePadding
           padding: EdgeInsets.fromLTRB(sidePadding, 10, sidePadding, 20),
           child: _buildInputField(screenWidth),
         ),
