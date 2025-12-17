@@ -1,5 +1,5 @@
 name: ai_hub_flutter
-description: AI chat application.
+description: AI chat application for Linux Desktop.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -9,18 +9,26 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  window_manager: ^0.4.0  # або остання версія з pub.dev
 
-
-  # --- ДОДАНІ БІБЛІОТЕКИ ---
-  google_generative_ai: ^0.4.0 # Для роботи з Gemini API
-  provider: ^6.1.1 # Для керування станом (State Management)
-  shared_preferences: ^2.2.2 # Для збереження API ключа
-  flutter_markdown: ^0.6.14 # Для гарного відображення тексту від AI
-  file_picker: ^8.0.0 # Для вибору картинок
-  # --------------------------
-
+  # --- UI та Вікна ---
+  window_manager: ^0.3.9
   cupertino_icons: ^1.0.6
+  flutter_markdown: ^0.7.0
+
+  # --- Логіка та Стан ---
+  provider: ^6.1.1
+  shared_preferences: ^2.2.2
+  file_picker: ^8.0.0
+
+  # --- ШІ та Мережа ---
+  google_generative_ai: ^0.4.0
+  http: ^1.2.0
+  desktop_drop: ^0.5.0
+
+  # --- Для оновлення (Update Logic) ---
+  # ОНОВЛЕНО ВЕРСІЮ, ЩОБ ВИРІШИТИ КОНФЛІКТ
+  package_info_plus: ^8.0.0
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
@@ -29,5 +37,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-   
-
