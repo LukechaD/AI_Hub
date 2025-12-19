@@ -22,8 +22,8 @@ final List<LLMFamily> LLM_FAMILIES = [
           displayName: 'Gemini 3 Pro',
           family: 'Google'),
       LLMModel(
-          id: 'gemini-2.5-pro',
-          displayName: 'Gemini 2.5 Pro',
+          id: 'gemini-3-flash-preview',
+          displayName: 'Gemini 3 Flash',
           family: 'Google'),
       LLMModel(
           id: 'gemini-2.5-flash',
